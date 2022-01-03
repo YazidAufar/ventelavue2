@@ -8,60 +8,59 @@
                 <b-navbar-brand ><a href="#" class="nav__logo">Ventela®</a></b-navbar-brand>
 
                 <div class="nav__shop2">
-                    <a href="#" class="nav__icon">
+                    <a class="nav__icon">
                         <i class='bx bx-shopping-bag'></i>
-                        <span>2</span>
+                        <span>{{ keranjangUser.length }}</span>
                     </a>
                     
-                    <div class="nav__shop2-content">
-                        
-                        <div class="title_shop">
-                            <span>Keranjang Belanja</span>
-                        </div>
-                    
-                        <div class="item">                       
-                            <div class="image_cart">
-                                <div class="image_c">
-                                    <img src="assets/img/sneakers1.png" alt="">
-                                </div>
-                            </div>                     
-                            <div class="description">
-                                <span>Hard13 Noir</span>
-                                <span>1 Pcs</span>
-                            </div>                            
-                            <div class="total-price">Rp. 400.000</div>
-                            <a href="#" class="delete-item">
-                                <i class='bx bx-x'></i>
-                            </a>
-                        </div>
-        
-                        <div class="item">                       
-                            <div class="image_cart">
-                                <div class="image_c">
-                                    <img src="assets/img/sneakers2.png" alt="">
-                                </div>
-                            </div>                       
-                            <div class="description">
-                                <span>Sang Sakerta</span>
-                                <span>1 Pcs</span>
-                            </div>                        
-                            <div class="total-price">Rp. 430.000</div>
-                            <a href="#" class="delete-item">
-                                <i class='bx bx-x'></i>
-                            </a>
-                        </div>
-                        <div class="total-all">
-                            <span>Total</span>
-                            <span>Rp. 830.000</span>
-                        </div>
-                        <div class="btn-viewcard">
-                            <a href="#" class="button-top">View Card</a>
-                        </div>
-                        <div class="btn-checkout">
-                            <a href="#" class="button-top2">Check Out</a>
-                        </div>                        
+                    <div class="nav__shop-content">
+                        <tbody v-if="keranjangUser.length > 0">
+                            <div class="title_shop">
+                                <span>Keranjang Belanja</span>
+                            </div>
+
+                            <div v-for="keranjang in keranjangUser" :key="keranjang.id" class="item">                       
+                                <div class="image_cart">
+                                    <div class="image_c">
+                                        <img :src="keranjang.photo" alt="">
+                                    </div>
+                                </div>                     
+                                <div class="description">
+                                    <span>{{ keranjang.name }}</span>
+                                    <span>1 Pcs</span>
+                                </div>                            
+                                <div class="total-price">Rp. {{ keranjang.price }}</div>
+                                <a @click="removeItem(keranjang.id)" class="delete-item">
+                                    <i class='bx bx-x'></i>
+                                </a>
+                            </div>
+                            
+                            <div class="total-all">
+                                <span>Total</span>
+                                <span>Rp. {{ totalHarga }}</span>
+                            </div>
+                            
+                            <div class="btn-viewcard">
+                                <router-link to="/ShoppingCart" class="button-top"> 
+                                    View Card
+                                </router-link>
+                            </div>
+                            
+                            
+                            
+                            <div class="btn-checkout">
+                                <a href="#" class="button-top2">Check Out</a>
+                            </div> 
+                        </tbody>  
+
+                        <tbody v-else>
+                            <tr>
+                                <td>Keranjang kosong</td>
+                            </tr>
+                        </tbody>                    
                     </div>
                 </div>
+
 
 
                 <b-collapse  id="nav-text-collapse" is-nav>
@@ -90,58 +89,56 @@
 
 
                 <div class="nav__shop">
-                    <a href="#" class="nav__icon">
+                    <a class="nav__icon">
                         <i class='bx bx-shopping-bag'></i>
-                        <span>2</span>
+                        <span>{{ keranjangUser.length }}</span>
                     </a>
                     
                     <div class="nav__shop-content">
-                        
-                        <div class="title_shop">
-                            <span>Keranjang Belanja</span>
-                        </div>
-                    
-                        <div class="item">                       
-                            <div class="image_cart">
-                                <div class="image_c">
-                                    <img src="assets/img/sneakers1.png" alt="">
-                                </div>
-                            </div>                     
-                            <div class="description">
-                                <span>Hard13 Noir</span>
-                                <span>1 Pcs</span>
-                            </div>                            
-                            <div class="total-price">Rp. 400.000</div>
-                            <a href="#" class="delete-item">
-                                <i class='bx bx-x'></i>
-                            </a>
-                        </div>
-        
-                        <div class="item">                       
-                            <div class="image_cart">
-                                <div class="image_c">
-                                    <img src="assets/img/sneakers2.png" alt="">
-                                </div>
-                            </div>                       
-                            <div class="description">
-                                <span>Sang Sakerta</span>
-                                <span>1 Pcs</span>
-                            </div>                        
-                            <div class="total-price">Rp. 430.000</div>
-                            <a href="#" class="delete-item">
-                                <i class='bx bx-x'></i>
-                            </a>
-                        </div>
-                        <div class="total-all">
-                            <span>Total</span>
-                            <span>Rp. 830.000</span>
-                        </div>
-                        <div class="btn-viewcard">
-                            <a href="#" class="button-top">View Card</a>
-                        </div>
-                        <div class="btn-checkout">
-                            <a href="#" class="button-top2">Check Out</a>
-                        </div>                        
+                        <tbody v-if="keranjangUser.length > 0">
+                            <div class="title_shop">
+                                <span>Keranjang Belanja</span>
+                            </div>
+
+                            <div v-for="keranjang in keranjangUser" :key="keranjang.id" class="item">                       
+                                <div class="image_cart">
+                                    <div class="image_c">
+                                        <img :src="keranjang.photo" alt="">
+                                    </div>
+                                </div>                     
+                                <div class="description">
+                                    <span>{{ keranjang.name }}</span>
+                                    <span>1 Pcs</span>
+                                </div>                            
+                                <div class="total-price">Rp. {{ keranjang.price }}</div>
+                                <a @click="removeItem(keranjang.id)" class="delete-item">
+                                    <i class='bx bx-x'></i>
+                                </a>
+                            </div>
+                            
+                            <div class="total-all">
+                                <span>Total</span>
+                                <span>Rp. {{ totalHarga }}</span>
+                            </div>
+                            
+                            <div class="btn-viewcard">
+                                <router-link to="/ShoppingCart" class="button-top"> 
+                                    View Card
+                                </router-link>
+                            </div>
+                            
+                            
+                            
+                            <div class="btn-checkout">
+                                <a href="#" class="button-top2">Check Out</a>
+                            </div> 
+                        </tbody>  
+
+                        <tbody v-else>
+                            <tr>
+                                <td>Keranjang kosong</td>
+                            </tr>
+                        </tbody>                    
                     </div>
                 </div>  
             </b-navbar>
@@ -151,11 +148,48 @@
 <script>
 export default {
     name: 'HeaderVentela',
-    data: () => {
+    data() {
         return {
-        nightMode: false
+            nightMode: false,
+            keranjangUser: []
         }
     },
+
+    methods: {
+        removeItem(idx) {
+            
+            // cari tahu id dari si item yang akan dihapus
+            let keranjangUserStorage = JSON.parse(localStorage.getItem("keranjangUser"));
+            let itemKeranjangUserStorage = keranjangUserStorage.map(itemKeranjangUserStorage => itemKeranjangUserStorage.id);
+            
+            //cocokan idx item dengan id yang ada di storage
+            let index = itemKeranjangUserStorage.findIndex(id => id == idx);
+            this.keranjangUser.splice(index, 1);
+
+            const parsed = JSON.stringify(this.keranjangUser);
+            localStorage.setItem("keranjangUser", parsed);
+            window.location.reload();
+        }
+    },
+
+    mounted(){
+        if (localStorage.getItem('keranjangUser')) {
+            try{
+                this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+            } catch(e) {
+                localStorage.removeItem('keranjangUser');
+            }    
+        }
+    },
+
+    computed:{
+        totalHarga() {
+            return this.keranjangUser.reduce(function(items, data){
+                return items + data.price;
+            }, 0);
+        }
+    },
+
     watch: {
         nightMode: function() {
         localStorage.setItem("nightMode", JSON.stringify(this.nightMode));

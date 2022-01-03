@@ -28,28 +28,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr v-for="keranjang in keranjangUser" :key="keranjang.id">
                                     <td class="cart-pic first-row">
-                                        <img src="assets/img/sneakers1.png" />
+                                        <img :src="keranjang.photo" >
                                     </td>
                                     <td class="cart-title first-row text-center">
-                                        Hard13 Noir
+                                        {{ keranjang.name }}
                                     </td>
                                     <td class="p-size first-row">40</td>
-                                    <td class="p-price first-row">Rp. 400.000</td>
-                                    <td class="delete-item-sc first-row"><a href="#"><i class='bx bx-x'></i></a></td>
+                                    <td class="p-price first-row">{{ keranjang.price }}</td>                                    
+                                    <td @click="removeItem(keranjang.id)" class="delete-item-sc first-row"><i class='bx bx-x'></i></td>
                                 </tr>
-                                <tr>
-                                    <td class="cart-pic first-row">
-                                        <img src="assets/img/sneakers2.png" />
-                                    </td>
-                                    <td class="cart-title first-row text-center">
-                                        Sang Sakerta
-                                    </td>
-                                    <td class="p-size first-row">41</td>
-                                    <td class="p-price first-row">Rp. 430.000</td>
-                                    <td class="delete-item-sc first-row"><a href="#"><i class='bx bx-x'></i></a></td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
@@ -62,19 +52,45 @@
                             <form>
                                 <div class="form-group">
                                     <label for="namaLengkap">Nama Lengkap</label>
-                                    <input type="text" class="form-control" id="namaLengkap" aria-describedby="namaHelp" placeholder="Masukan Nama Lengkap">
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="namaLengkap" 
+                                        aria-describedby="namaHelp" 
+                                        placeholder="Masukan Nama Lengkap"
+                                        v-model="customerInfo.name"
+                                    >
                                 </div>
                                 <div class="form-group">
                                     <label for="namaLengkap">Alamat Email</label>
-                                    <input type="email" class="form-control" id="emailAddress" aria-describedby="emailHelp" placeholder="Masukan Alamat Email">
+                                    <input 
+                                        type="email" 
+                                        class="form-control" 
+                                        id="emailAddress" 
+                                        aria-describedby="emailHelp" 
+                                        placeholder="Masukan Alamat Email"
+                                        v-model="customerInfo.email"
+                                    >
                                 </div>
                                 <div class="form-group">
                                     <label for="namaLengkap">Telepon</label>
-                                    <input type="text" class="form-control" id="noHP" aria-describedby="noHPHelp" placeholder="Masukan Telepon">
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="noHP" 
+                                        aria-describedby="noHPHelp" 
+                                        placeholder="Masukan Telepon"
+                                        v-model="customerInfo.number"
+                                    >
                                 </div>
                                 <div class="form-group">
                                     <label for="alamatLengkap">Alamat Lengkap</label>
-                                    <textarea class="form-control" id="alamatLengkap" rows="3"></textarea>
+                                    <textarea 
+                                        class="form-control" 
+                                        id="alamatLengkap" 
+                                        rows="3"
+                                        v-model="customerInfo.address">
+                                    </textarea>
                                 </div>
                             </form>
                         </div>
@@ -84,15 +100,15 @@
                 <div class="proceed-checkout">
                     <ul>
                         <li class="subtotal">ID Transaction <span>#SH12000</span></li>
-                        <li class="subtotal mt-3">Subtotal <span>$240.00</span></li>
-                        <li class="subtotal mt-3">Pajak <span>10%</span></li>
-                        <li class="subtotal mt-3">Total Biaya <span>$440.00</span></li>
+                        <li class="subtotal mt-3">Subtotal <span>Rp. {{ totalHarga }}</span></li>
+                        <li class="subtotal mt-3">Pajak <span>10% Rp. {{ ditambahPajak }}</span></li>
+                        <li class="subtotal mt-3">Total Biaya <span>Rp. {{ totalBiaya }}</span></li>
                         <li class="subtotal mt-3">Bank Transfer <span>Mandiri</span></li>
                         <li class="subtotal mt-3">No. Rekening <span>2208 1996 1403</span></li>
                         <li class="subtotal-btm mt-3">Nama Penerima <span>Yazid</span></li>
                     </ul>
                     
-                    <router-link to="/success" class="proceed-btn">I ALREADY PAID</router-link>
+                    <a @click="checkout()" href="#" class="proceed-btn">I ALREADY PAID</a>
                 </div>
                     
             </div>
@@ -101,7 +117,89 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: 'CartVentela',
+    name: 'CartVentela',
+    data() {
+        return {
+            keranjangUser: [],
+            customerInfo: {
+                name: '',
+                email: '',
+                number: '',
+                address: ''
+            }
+        }
+    },
+
+    methods: {
+        removeItem(idx) { 
+            // cari tahu id dari si item yang akan dihapus
+            let keranjangUserStorage = JSON.parse(localStorage.getItem("keranjangUser"));
+            let itemKeranjangUserStorage = keranjangUserStorage.map(itemKeranjangUserStorage => itemKeranjangUserStorage.id);
+            
+            //cocokan idx item dengan id yang ada di storage
+            let index = itemKeranjangUserStorage.findIndex(id => id == idx);
+            this.keranjangUser.splice(index, 1);
+
+            const parsed = JSON.stringify(this.keranjangUser);
+            localStorage.setItem("keranjangUser", parsed);
+            window.location.reload();
+        },
+
+        // fungsi mengirim data ke API
+        checkout(){
+            let productIds = this.keranjangUser.map(function(product){
+                return product.id
+            });
+
+            let checkoutData = {
+                'name': this.customerInfo.name,
+                'email': this.customerInfo.email,
+                'number': this.customerInfo.number,
+                'address': this.customerInfo.address,
+                "transaction_total": this.totalBiaya,
+                "transaction_status": "PENDING",
+                "transaction_details": productIds
+            };
+
+            axios
+                .post(
+                "http://ventela.000webhostapp.com/api/checkout",
+                checkoutData
+                )
+                .then(() => this.$router.push("success"))
+                // eslint-disable-next-line no-console
+                .catch(err => console.log(err));
+        }
+        
+    },
+
+    mounted(){
+        if (localStorage.getItem('keranjangUser')) {
+            try{
+                this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+            } catch(e) {
+                localStorage.removeItem('keranjangUser');
+            }    
+        }
+    },
+
+    computed:{
+        totalHarga() {
+            return this.keranjangUser.reduce(function(items, data){
+                return items + data.price;
+            }, 0);
+        },
+
+        ditambahPajak(){
+            return (this.totalHarga * 10) / 100;
+        },
+
+        totalBiaya(){
+            return this.totalHarga + this.ditambahPajak;
+        }
+    }
 }
 </script>

@@ -20,33 +20,24 @@
                     <div class="product-pic-zoom">
                         <img class="product-big-img" :src="gambar_default" alt="" />
                     </div>
-                    <div class="product-thumbs ">
+                    <div class="product-thumbs" v-if="productDetails.galleries.length > 0">
                         <slick ref="slick" :options="slider_nav" class="product-thumbs-track ps-slider bd-grid">
-                            <div class="pt" @click="changeImage(thumbs[0])" :class="thumbs[0] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_1.jpg" alt="" />
-                            </div>
-                            <div class="pt" @click="changeImage(thumbs[1])" :class="thumbs[1] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_2.jpg" alt="" />
-                            </div>
-                            <div class="pt" @click="changeImage(thumbs[2])" :class="thumbs[2] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_3.jpg" alt="" />
-                            </div>
-                            <div class="pt" @click="changeImage(thumbs[3])" :class="thumbs[3] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_4.jpg" alt="" />
-                            </div>
-                            <div class="pt" @click="changeImage(thumbs[4])" :class="thumbs[4] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_5.jpg" alt="" />
-                            </div>
-                            <div class="pt" @click="changeImage(thumbs[5])" :class="thumbs[5] == gambar_default ? 'active' : ''">
-                                <img src="assets/img/detail_6.jpg" alt="" />
-                            </div>
+                            <div 
+                                v-for="ss in productDetails.galleries"
+                                :key="ss.id"
+                                class="pt" 
+                                @click="changeImage(ss.photo)" 
+                                :class="ss.photo == gambar_default ? 'active' : ''">
+
+                                <img :src="ss.photo" alt />
+                            </div>                            
                         </slick>
                     </div>
                 </div>
 
                 <div class="detail__data">
-                    <span class="section-subtitle detail__initial">Low</span>
-                    <h2 class="section-title detail__initial">Sang Sekerta</h2>
+                    <span class="section-subtitle detail__initial">{{ productDetails.type }}</span>
+                    <h2 class="section-title detail__initial">{{ productDetails.name }}</h2>
                     
 
                     <div class="size_detail-container">
@@ -78,30 +69,20 @@
 
                             <input type="radio" id="44" value="44" v-model="checked">
                             <label for="44" class="size_detail" >44</label>
-                            
+
+                            <input type="radio" id="45" value="45" v-model="checked">
+                            <label for="45" class="size_detail" >45</label>
                         </div>
-                        
-                        
                     </div>   
-
-                    
-
-                    <p class="detail__description">
-                        <b>MATERIALS</b><br>                          
-                        Upper       : 12 oz canvas <br>
-                        Toe Cap     : Suede <br>
-                        Thread      : Nylon <br>                             
-                        Eyelets     : Alumunium Silver + Ring <br>                            
-                        Insole      : Ultralite Foam <br>                            
-                        Foxing      : Rubber <br>                            
-                        Outsole     : Rubber <br>                            
-                        Stripe      : Suede<br>
-                    </p>
+                   
+                    <p class="detail__description" v-html="productDetails.description"></p>
                     <div class="price_detail">
-                        <b>Rp. 430.000</b>
+                        <b>Rp. {{ productDetails.price }}</b>
                     </div>
                     <br>    
-                    <router-link to="/shoppingcart" class="button">Add to Cart</router-link>
+                    <router-link to="/ShoppingCart">
+                        <a @click="saveKeranjang(productDetails.id, productDetails.name, productDetails.price, productDetails.galleries[0].photo)" href="#" class="button">Add to Cart</a>
+                    </router-link>
                 </div> 
             </div>
         </section>
@@ -156,6 +137,8 @@
 <script>
 import Slick from 'vue-slick';
 
+import axios from "axios";
+
 export default {
     components: { Slick },
 
@@ -195,22 +178,55 @@ export default {
             
             checked: '',
 
-            gambar_default: "assets/img/detail_1.jpg",
-            thumbs: [
-                "assets/img/detail_1.jpg",
-                "assets/img/detail_2.jpg",
-                "assets/img/detail_3.jpg",
-                "assets/img/detail_4.jpg",
-                "assets/img/detail_5.jpg",
-                "assets/img/detail_6.jpg"
-            ]
+            gambar_default: "",
+            productDetails: [],
+            keranjangUser:[]
         };
     },
 
     methods: {
         changeImage(urlImage){
             this.gambar_default = urlImage;
+        },
+        setDataPicture(data) {
+            // replace object productDetails dengan data dari API
+            this.productDetails = data;
+            // replace value gambar default dengan data dari API (galleries)
+            this.gambar_default = data.galleries[0].photo;
+        },
+        saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct){
+            var productStored = {
+                "id": idProduct,
+                "name": nameProduct,
+                "price": priceProduct,
+                "photo": photoProduct
+            }
+            
+            this.keranjangUser.push(productStored);
+            const parsed = JSON.stringify(this.keranjangUser);
+            localStorage.setItem('keranjangUser', parsed);    
         }
+    },
+
+    mounted(){
+        if (localStorage.getItem('keranjangUser')) {
+            try{
+                this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+            } catch(e) {
+                localStorage.removeItem('keranjangUser');
+            }    
+
+        }
+        
+        axios
+            .get("http://ventela.000webhostapp.com/api/products", {
+                params: {
+                    id: this.$route.params.id
+                }    
+            })
+            .then(res => (this.setDataPicture(res.data.data)))
+            // eslint-disable-next-line no-console
+            .catch(err => console.log(err));
     },
     
     name: 'DetailVentela',

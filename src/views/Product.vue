@@ -13,6 +13,8 @@ import HeaderVentela from '@/components/HeaderVentela.vue';
 import DetailVentela from '@/components/DetailVentela.vue';
 import FooterVentela from '@/components/FooterVentela.vue';
 
+
+
 export default {
   name: 'Product',
   components: {

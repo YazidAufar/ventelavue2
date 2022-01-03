@@ -13,6 +13,8 @@ import HeaderVentela from '@/components/HeaderVentela.vue';
 import CartVentela from '@/components/CartVentela.vue';
 import FooterVentela from '@/components/FooterVentela.vue';
 
+
+
 export default {
   name: 'ShoppingCart',
   components: {
