@@ -166,7 +166,7 @@ export default {
 
             axios
                 .post(
-                "http://ventela.000webhostapp.com/api/checkout",
+                "https://ventela.000webhostapp.com/api/checkout",
                 checkoutData
                 )
                 .then(() => this.$router.push("success"))
