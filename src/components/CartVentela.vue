@@ -165,7 +165,7 @@ export default {
             };
 
             axios
-                .post("https://ventela.000webhostapp.com/api/checkout", checkoutData)
+                .post("http://127.0.0.1:8001/api/checkout", checkoutData)
                 .then(() => this.$router.push("success"))
                 // eslint-disable-next-line no-console
                 .catch(err => console.log(err));
