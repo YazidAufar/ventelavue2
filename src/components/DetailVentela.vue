@@ -219,7 +219,7 @@ export default {
         }
         
         axios
-            .get("http://ventela.000webhostapp.com/api/products", {
+            .get("https://ventela.000webhostapp.com/api/products", {
                 params: {
                     id: this.$route.params.id
                 }    
